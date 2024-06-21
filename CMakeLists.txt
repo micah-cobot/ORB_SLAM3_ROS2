@@ -4,7 +4,6 @@ project(orbslam3)
 # You should set the PYTHONPATH to your own python site-packages path
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
-# Construct PYTHONPATH using the found Python version
 set(PYTHON_VERSION_STRING "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}")
 set(ENV{PYTHONPATH} "/opt/ros/humble/lib/python${PYTHON_VERSION_STRING}/site-packages")
 
