@@ -22,16 +22,21 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(Sophus REQUIRED)
 find_package(Pangolin REQUIRED)
 find_package(ORB_SLAM3 REQUIRED)
+
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/../../third_party/SPSCQueue ${CMAKE_BINARY_DIR}/SPSCQueue)
 
 include_directories(
   include
   ${ORB_SLAM3_ROOT_DIR}/include
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
   ${ORB_SLAM3_ROOT_DIR}/Thirdparty/Sophus
+  ${PROJECT_SOURCE_DIR}/../../third_party/SPSCQueue/include
 )
 
 link_directories(
@@ -62,7 +67,15 @@ add_executable(stereo-inertial
 )
 ament_target_dependencies(stereo-inertial rclcpp sensor_msgs cv_bridge ORB_SLAM3 Pangolin OpenCV)
 
-install(TARGETS mono rgbd stereo stereo-inertial DESTINATION lib/${PROJECT_NAME})
+add_executable(time-sync
+  src/time-sync/stamp_node.cpp
+)
+ament_target_dependencies(time-sync rclcpp sensor_msgs cv_bridge message_filters image_transport ORB_SLAM3 Pangolin OpenCV)
+target_link_libraries(time-sync
+  SPSCQueue
+)
+
+install(TARGETS mono rgbd stereo stereo-inertial time-sync DESTINATION lib/${PROJECT_NAME})
 
 # Install launch files.
 #install(DIRECTORY launch config vocabulary
